@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
 
 interface Product {
   id: number;
@@ -38,6 +38,7 @@ const RecommendationPanel = ({
   const handleSaveApiKey = () => {
     onApiKeyChange(tempApiKey);
     setShowApiInput(false);
+    toast.success("API key saved successfully");
   };
 
   // If no API key and search term is valid, show API input option
@@ -48,33 +49,29 @@ const RecommendationPanel = ({
           <CardTitle className="text-xl">Get AI Product Recommendations</CardTitle>
         </CardHeader>
         <CardContent>
-          {!showApiInput ? (
-            <div className="text-center">
-              <p className="mb-4 text-muted-foreground">
-                Connect Claude AI to get personalized product recommendations based on your search.
-              </p>
-              <Button onClick={() => setShowApiInput(true)}>
-                Connect Claude API
-              </Button>
+          <div className="p-4 border rounded-md bg-background">
+            <h3 className="text-sm font-medium mb-2">Enter Anthropic Claude API Key</h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              To enable AI-powered product recommendations based on your search, please enter your Claude API key below.
+            </p>
+            <div className="flex gap-2">
+              <Input 
+                type="password" 
+                value={tempApiKey} 
+                onChange={(e) => setTempApiKey(e.target.value)} 
+                placeholder="sk-ant-api03-..."
+                className="flex-1"
+              />
+              <Button onClick={handleSaveApiKey}>Save</Button>
             </div>
-          ) : (
-            <div className="p-4 border rounded-md bg-background">
-              <h3 className="text-sm font-medium mb-2">Enter Anthropic Claude API Key</h3>
-              <div className="flex gap-2">
-                <Input 
-                  type="password" 
-                  value={tempApiKey} 
-                  onChange={(e) => setTempApiKey(e.target.value)} 
-                  placeholder="sk-ant-api03-..."
-                  className="flex-1"
-                />
-                <Button onClick={handleSaveApiKey}>Save</Button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Your API key is stored locally in your browser and never sent to our servers.
-              </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Your API key is stored locally in your browser and never sent to our servers.
+            </p>
+            <div className="text-xs text-muted-foreground mt-4">
+              <p className="font-medium">Note about CORS:</p> 
+              <p>This app uses a CORS proxy for demonstration purposes. For production use, you should set up your own proxy server.</p>
             </div>
-          )}
+          </div>
         </CardContent>
       </Card>
     );

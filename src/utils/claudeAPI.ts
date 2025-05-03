@@ -10,12 +10,18 @@ export const getProductRecommendations = async (
   apiKey: string
 ): Promise<ClaudeRecommendationResponse> => {
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    // Use cors-anywhere proxy service to bypass CORS restrictions
+    // Note: For production, you should set up your own proxy server
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    const claudeApiUrl = 'https://api.anthropic.com/v1/messages';
+    
+    const response = await fetch(`${proxyUrl}${claudeApiUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01"
+        "anthropic-version": "2023-06-01",
+        "Origin": window.location.origin
       },
       body: JSON.stringify({
         model: "claude-3-sonnet-20240229",
@@ -59,6 +65,17 @@ export const getProductRecommendations = async (
     return JSON.parse(jsonString);
   } catch (error) {
     console.error("Error fetching Claude recommendations:", error);
-    return { recommendation: "Failed to get recommendations", suggestedProducts: [] };
+    
+    // Add more detailed error logging
+    if (error instanceof Response) {
+      const errorText = await error.text();
+      console.error("API response error:", errorText);
+    }
+    
+    return { 
+      recommendation: "Failed to get recommendations. Please check your API key or try again later.", 
+      suggestedProducts: [] 
+    };
   }
 };
+
