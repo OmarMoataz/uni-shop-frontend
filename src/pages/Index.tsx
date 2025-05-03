@@ -86,7 +86,6 @@ const products = [
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [apiKey, setApiKey] = useState('');
-  const [showApiInput, setShowApiInput] = useState(false);
   const [recommendation, setRecommendation] = useState('');
   const [suggestedProductIds, setSuggestedProductIds] = useState<number[]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
@@ -146,38 +145,11 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-primary">ShopNow</h1>
             <div className="flex items-center space-x-4">
-              {!apiKey && (
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowApiInput(prev => !prev)}
-                >
-                  Connect Claude
-                </Button>
-              )}
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
               </Button>
             </div>
           </div>
-          
-          {showApiInput && (
-            <div className="mt-4 p-4 border rounded-md bg-background">
-              <h3 className="text-sm font-medium mb-2">Enter Anthropic Claude API Key</h3>
-              <div className="flex gap-2">
-                <Input 
-                  type="password" 
-                  value={apiKey} 
-                  onChange={(e) => setApiKey(e.target.value)} 
-                  placeholder="sk-ant-api03-..."
-                  className="flex-1"
-                />
-                <Button onClick={() => setShowApiInput(false)}>Save</Button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Your API key is stored locally in your browser and never sent to our servers.
-              </p>
-            </div>
-          )}
         </div>
       </header>
 
@@ -201,13 +173,14 @@ const Index = () => {
       {/* Main content */}
       <div className="container mx-auto py-8 px-4 md:px-6">
         {/* AI Recommendations */}
-        {apiKey && searchTerm.length >= 3 && (
-          <RecommendationPanel 
-            recommendation={recommendation} 
-            products={suggestedProducts}
-            isLoading={isLoadingRecommendations}
-          />
-        )}
+        <RecommendationPanel 
+          recommendation={recommendation} 
+          products={suggestedProducts}
+          isLoading={isLoadingRecommendations}
+          searchTerm={searchTerm}
+          onApiKeyChange={setApiKey}
+          apiKey={apiKey}
+        />
 
         {/* Categories */}
         <section className="mb-8">

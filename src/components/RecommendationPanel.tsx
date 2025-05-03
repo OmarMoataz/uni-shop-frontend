@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface Product {
   id: number;
@@ -17,9 +19,67 @@ interface RecommendationPanelProps {
   recommendation: string;
   products: Product[];
   isLoading: boolean;
+  searchTerm: string;
+  onApiKeyChange: (apiKey: string) => void;
+  apiKey: string;
 }
 
-const RecommendationPanel = ({ recommendation, products, isLoading }: RecommendationPanelProps) => {
+const RecommendationPanel = ({ 
+  recommendation, 
+  products, 
+  isLoading, 
+  searchTerm, 
+  onApiKeyChange, 
+  apiKey 
+}: RecommendationPanelProps) => {
+  const [showApiInput, setShowApiInput] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState(apiKey);
+  
+  const handleSaveApiKey = () => {
+    onApiKeyChange(tempApiKey);
+    setShowApiInput(false);
+  };
+
+  // If no API key and search term is valid, show API input option
+  if (!apiKey && searchTerm && searchTerm.length >= 3) {
+    return (
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-xl">Get AI Product Recommendations</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!showApiInput ? (
+            <div className="text-center">
+              <p className="mb-4 text-muted-foreground">
+                Connect Claude AI to get personalized product recommendations based on your search.
+              </p>
+              <Button onClick={() => setShowApiInput(true)}>
+                Connect Claude API
+              </Button>
+            </div>
+          ) : (
+            <div className="p-4 border rounded-md bg-background">
+              <h3 className="text-sm font-medium mb-2">Enter Anthropic Claude API Key</h3>
+              <div className="flex gap-2">
+                <Input 
+                  type="password" 
+                  value={tempApiKey} 
+                  onChange={(e) => setTempApiKey(e.target.value)} 
+                  placeholder="sk-ant-api03-..."
+                  className="flex-1"
+                />
+                <Button onClick={handleSaveApiKey}>Save</Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Your API key is stored locally in your browser and never sent to our servers.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (isLoading) {
     return (
       <Card className="mb-8">
