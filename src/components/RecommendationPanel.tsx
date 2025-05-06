@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/sonner";
 
 interface Product {
   id: number;
@@ -27,61 +25,14 @@ interface RecommendationPanelProps {
 const RecommendationPanel = ({ 
   recommendation, 
   products, 
-  isLoading, 
-  searchTerm, 
-  onApiKeyChange, 
-  apiKey 
+  isLoading
 }: RecommendationPanelProps) => {
-  const [showApiInput, setShowApiInput] = useState(false);
-  const [tempApiKey, setTempApiKey] = useState(apiKey);
-  
-  const handleSaveApiKey = () => {
-    onApiKeyChange(tempApiKey);
-    setShowApiInput(false);
-    toast.success("API key saved successfully");
-  };
-
-  // If no API key and search term is valid, show API input option
-  if (!apiKey && searchTerm && searchTerm.length >= 3) {
-    return (
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-xl">Get AI Product Recommendations</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="p-4 border rounded-md bg-background">
-            <h3 className="text-sm font-medium mb-2">Enter Anthropic Claude API Key</h3>
-            <p className="text-xs text-muted-foreground mb-4">
-              To enable AI-powered product recommendations based on your search, please enter your Claude API key below.
-            </p>
-            <div className="flex gap-2">
-              <Input 
-                type="password" 
-                value={tempApiKey} 
-                onChange={(e) => setTempApiKey(e.target.value)} 
-                placeholder="sk-ant-api03-..."
-                className="flex-1"
-              />
-              <Button onClick={handleSaveApiKey}>Save</Button>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Your API key is stored locally in your browser and never sent to our servers.
-            </p>
-            <div className="text-xs text-muted-foreground mt-4">
-              <p className="font-medium">Note about CORS:</p> 
-              <p>This app uses a CORS proxy for demonstration purposes. For production use, you should set up your own proxy server.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   if (isLoading) {
     return (
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="text-xl">Getting AI Recommendations...</CardTitle>
+          <CardTitle className="text-xl">Getting Recommendations...</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse">
@@ -102,8 +53,8 @@ const RecommendationPanel = ({
     <Card className="mb-8 border-primary/20">
       <CardHeader className="bg-primary/5 border-b border-primary/10">
         <CardTitle className="text-xl flex items-center gap-2">
-          AI Recommendations
-          <Badge variant="outline" className="ml-2 bg-primary/10">Claude</Badge>
+          Recommendations
+          <Badge variant="outline" className="ml-2 bg-primary/10">Smart Search</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-4">

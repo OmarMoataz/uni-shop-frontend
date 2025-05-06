@@ -4,78 +4,57 @@ export interface ClaudeRecommendationResponse {
   suggestedProducts: number[];
 }
 
-// This function calls Claude API to get product recommendations
+// This is a placeholder function that returns static recommendations
+// The Claude API integration has been removed
 export const getProductRecommendations = async (
   searchTerm: string,
   apiKey: string
 ): Promise<ClaudeRecommendationResponse> => {
   try {
-    // Use cors-anywhere proxy service to bypass CORS restrictions
-    // Note: For production, you should set up your own proxy server
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const claudeApiUrl = 'https://api.anthropic.com/v1/messages';
+    // Simulate API call with a delay
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    const response = await fetch(`${proxyUrl}${claudeApiUrl}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "Origin": window.location.origin
-      },
-      body: JSON.stringify({
-        model: "claude-3-sonnet-20240229",
-        max_tokens: 1024,
-        messages: [
-          {
-            role: "user",
-            content: `Based on the search term "${searchTerm}", recommend some relevant products from this product list:
-            ${JSON.stringify(
-              [
-                { id: 1, name: "Wireless Headphones", category: "Electronics", price: 149.99 },
-                { id: 2, name: "Smart Watch", category: "Electronics", price: 299.99 },
-                { id: 3, name: "Running Shoes", category: "Sports", price: 89.99 },
-                { id: 4, name: "Cotton T-Shirt", category: "Clothing", price: 24.99 },
-                { id: 5, name: "Smartphone", category: "Electronics", price: 899.99 },
-                { id: 6, name: "Laptop", category: "Electronics", price: 1299.99 },
-                { id: 7, name: "Coffee Maker", category: "Home", price: 79.99 },
-                { id: 8, name: "Backpack", category: "Accessories", price: 49.99 }
-              ],
-              null,
-              2
-            )}
-
-            Format your response as valid JSON with these fields:
-            - recommendation: A short paragraph explaining why these products match the search
-            - suggestedProducts: An array of product IDs that match the search term
-            
-            Only include the JSON in your response, nothing else.`
-          }
-        ]
-      })
-    });
-
-    const data = await response.json();
-    const content = data.content?.[0]?.text || "{}";
+    // Return static recommendations based on search term
+    const term = searchTerm.toLowerCase();
     
-    // Extract just the JSON part of the response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    const jsonString = jsonMatch ? jsonMatch[0] : "{}";
-    
-    return JSON.parse(jsonString);
-  } catch (error) {
-    console.error("Error fetching Claude recommendations:", error);
-    
-    // Add more detailed error logging
-    if (error instanceof Response) {
-      const errorText = await error.text();
-      console.error("API response error:", errorText);
+    if (term.includes('electronic') || term.includes('tech') || term.includes('gadget')) {
+      return {
+        recommendation: "We found some great electronic products that match your search.",
+        suggestedProducts: [1, 2, 5, 6]
+      };
+    } else if (term.includes('sport') || term.includes('fitness') || term.includes('exercise')) {
+      return {
+        recommendation: "Check out these sports and fitness items.",
+        suggestedProducts: [3]
+      };
+    } else if (term.includes('cloth') || term.includes('wear') || term.includes('apparel')) {
+      return {
+        recommendation: "Here are some clothing items you might like.",
+        suggestedProducts: [4]
+      };
+    } else if (term.includes('home') || term.includes('kitchen') || term.includes('house')) {
+      return {
+        recommendation: "These home products match your search.",
+        suggestedProducts: [7]
+      };
+    } else if (term.includes('travel') || term.includes('bag') || term.includes('carry')) {
+      return {
+        recommendation: "Perfect accessories for your travels.",
+        suggestedProducts: [8]
+      };
+    } else {
+      // Default: return a mix of popular products
+      return {
+        recommendation: "Here are some popular products you might be interested in.",
+        suggestedProducts: [1, 3, 6, 8]
+      };
     }
     
+  } catch (error) {
+    console.error("Error with recommendations:", error);
     return { 
-      recommendation: "Failed to get recommendations. Please check your API key or try again later.", 
+      recommendation: "Couldn't load recommendations at this time.", 
       suggestedProducts: [] 
     };
   }
 };
-

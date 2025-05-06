@@ -85,7 +85,6 @@ const products = [
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [apiKey, setApiKey] = useState('');
   const [recommendation, setRecommendation] = useState('');
   const [suggestedProductIds, setSuggestedProductIds] = useState<number[]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
@@ -110,16 +109,17 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Get recommendations when search term changes (if API key is provided)
+  // Get recommendations when search term changes
   useEffect(() => {
     const fetchRecommendations = async () => {
-      if (!apiKey || !debouncedSearch || debouncedSearch.length < 3) {
+      if (!debouncedSearch || debouncedSearch.length < 3) {
         return;
       }
       
       setIsLoadingRecommendations(true);
       try {
-        const result = await getProductRecommendations(debouncedSearch, apiKey);
+        // Pass empty string as apiKey since we're using the local implementation
+        const result = await getProductRecommendations(debouncedSearch, '');
         setRecommendation(result.recommendation);
         setSuggestedProductIds(result.suggestedProducts);
       } catch (error) {
@@ -130,7 +130,7 @@ const Index = () => {
     };
 
     fetchRecommendations();
-  }, [debouncedSearch, apiKey]);
+  }, [debouncedSearch]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -172,14 +172,14 @@ const Index = () => {
 
       {/* Main content */}
       <div className="container mx-auto py-8 px-4 md:px-6">
-        {/* AI Recommendations */}
+        {/* Recommendations */}
         <RecommendationPanel 
           recommendation={recommendation} 
           products={suggestedProducts}
           isLoading={isLoadingRecommendations}
           searchTerm={searchTerm}
-          onApiKeyChange={setApiKey}
-          apiKey={apiKey}
+          onApiKeyChange={() => {}}  // Empty function as we don't need this anymore
+          apiKey=""  // Empty string as we don't need an API key
         />
 
         {/* Categories */}
