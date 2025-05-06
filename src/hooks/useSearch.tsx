@@ -1,11 +1,14 @@
+import { IProduct } from "@/interfaces/IProduct";
 import { apiUrls } from "@/lib/apiURLs";
 import { useCallback, useEffect, useState } from "react";
 
-export const useSearch = (query: string) => {
+export const useSearch = (query: string): [IProduct[], boolean] => {
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [isError, setIsError] = useState(false);
 
     const fetchProducts = useCallback(async () => {
         try {
+            setIsError(false);
             let response: Response;
 
             if (query) {
@@ -17,6 +20,7 @@ export const useSearch = (query: string) => {
             const data = await response.json();
             setFilteredProducts(data);
         } catch (error) {
+            setIsError(true);
             console.error("Failed to fetch recommendations:", error);
         }
     }, [query]);
@@ -26,5 +30,5 @@ export const useSearch = (query: string) => {
     }, [query, fetchProducts]);
 
 
-    return filteredProducts;
+    return [filteredProducts, isError];
 };

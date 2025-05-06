@@ -5,82 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Search, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useSearch } from '@/hooks/useSearch';
-
-// Sample product data
-const products = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: 149.99,
-    category: "Electronics",
-    image: "/placeholder.svg",
-    rating: 4.5,
-    discount: 15,
-  },
-  {
-    id: 2,
-    name: "Smart Watch",
-    price: 299.99,
-    category: "Electronics",
-    image: "/placeholder.svg",
-    rating: 4.8,
-    discount: 0,
-  },
-  {
-    id: 3,
-    name: "Running Shoes",
-    price: 89.99,
-    category: "Sports",
-    image: "/placeholder.svg",
-    rating: 4.2,
-    discount: 10,
-  },
-  {
-    id: 4,
-    name: "Cotton T-Shirt",
-    price: 24.99,
-    category: "Clothing",
-    image: "/placeholder.svg",
-    rating: 4.0,
-    discount: 5,
-  },
-  {
-    id: 5,
-    name: "Smartphone",
-    price: 899.99,
-    category: "Electronics",
-    image: "/placeholder.svg",
-    rating: 4.7,
-    discount: 0,
-  },
-  {
-    id: 6,
-    name: "Laptop",
-    price: 1299.99,
-    category: "Electronics",
-    image: "/placeholder.svg",
-    rating: 4.9,
-    discount: 20,
-  },
-  {
-    id: 7,
-    name: "Coffee Maker",
-    price: 79.99,
-    category: "Home",
-    image: "/placeholder.svg",
-    rating: 4.3,
-    discount: 0,
-  },
-  {
-    id: 8,
-    name: "Backpack",
-    price: 49.99,
-    category: "Accessories",
-    image: "/placeholder.svg",
-    rating: 4.4,
-    discount: 0,
-  }
-];
+import { categories } from '@/enums';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -94,7 +19,7 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filteredProducts = useSearch(searchTerm);
+  const [filteredProducts, isError] = useSearch(debouncedSearch);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,10 +65,10 @@ const Index = () => {
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Categories</h2>
           <div className="flex overflow-x-auto gap-4 pb-4">
-            {["All", "Electronics", "Clothing", "Sports", "Home", "Accessories"].map((category) => (
+            {categories.map((category) => (
               <Button 
                 key={category} 
-                variant={category === "All" ? "default" : "outline"}
+                variant={category === searchTerm ? "default" : "outline"}
                 onClick={() => category === "All" ? setSearchTerm('') : setSearchTerm(category)}
                 className="whitespace-nowrap"
               >
@@ -156,7 +81,13 @@ const Index = () => {
         {/* Products */}
         <section>
           <h2 className="text-2xl font-bold mb-6">Products</h2>
-          {filteredProducts.length === 0 ? (
+          {isError && (
+            <div className="text-center py-12">
+            <h3 className="text-xl font-medium text-muted-foreground">Error fetching products</h3>
+            <p className="mt-2 text-muted-foreground">Please try again later</p>
+          </div>
+          )}
+          {!isError && filteredProducts.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium text-muted-foreground">No products found</h3>
               <p className="mt-2 text-muted-foreground">Try a different search term</p>
@@ -167,13 +98,13 @@ const Index = () => {
                 <Card key={product.id} className="overflow-hidden">
                   <div className="relative h-48 bg-secondary/20">
                     <img 
-                      src={product.image} 
+                      src={"/placeholder.svg"} 
                       alt={product.name}
                       className="w-full h-full object-contain p-4" 
                     />
                     {product.discount > 0 && (
                       <Badge className="absolute top-2 right-2 bg-destructive">
-                        -{product.discount}%
+                        -{(product.discount / product.price * 100).toFixed(0)}%
                       </Badge>
                     )}
                   </div>
@@ -181,7 +112,7 @@ const Index = () => {
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-base">{product.name}</CardTitle>
                     </div>
-                    <p className="text-sm text-muted-foreground">{product.category}</p>
+                    <p className="text-sm text-muted-foreground">{product.category?.name}</p>
                   </CardHeader>
                   <CardContent className="p-4 pt-2">
                     <div className="flex items-center gap-0.5 mt-1">
@@ -208,17 +139,17 @@ const Index = () => {
                   </CardContent>
                   <CardFooter className="p-4 pt-0 flex justify-between items-center">
                     <div>
-                      {product.discount > 0 ? (
+                      {product.price > 0 ? (
                         <div className="flex items-center gap-2">
                           <span className="text-lg font-bold">
-                            ${(product.price * (1 - product.originalPrice / 100)).toFixed(2)}
+                            {(product.price - product.discount).toFixed(2)} 
                           </span>
                           <span className="text-sm text-muted-foreground line-through">
-                            ${parseInt(product.price).toFixed(2)}
+                            ${product.price.toFixed(2)}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-lg font-bold">${parseInt(product.price).toFixed(2)}</span>
+                        <span className="text-lg font-bold">${parseInt(product.originalPrice).toFixed(2)}</span>
                       )}
                     </div>
                     <Button size="sm" className="rounded-full">
