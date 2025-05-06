@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getProductRecommendations } from '@/utils/claudeAPI';
-import RecommendationPanel from '@/components/RecommendationPanel';
+import { useSearch } from '@/hooks/useSearch';
 
 // Sample product data
 const products = [
@@ -85,52 +84,17 @@ const products = [
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [recommendation, setRecommendation] = useState('');
-  const [suggestedProductIds, setSuggestedProductIds] = useState<number[]>([]);
-  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  
-  // Filter products based on search term
-  const filteredProducts = products.filter(product => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Get suggested products based on recommendation
-  const suggestedProducts = products.filter(product => 
-    suggestedProductIds.includes(product.id)
-  );
 
   // Debounce search term to avoid too many API calls
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-    }, 1000);
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Get recommendations when search term changes
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      if (!debouncedSearch || debouncedSearch.length < 3) {
-        return;
-      }
-      
-      setIsLoadingRecommendations(true);
-      try {
-        // Pass empty string as apiKey since we're using the local implementation
-        const result = await getProductRecommendations(debouncedSearch, '');
-        setRecommendation(result.recommendation);
-        setSuggestedProductIds(result.suggestedProducts);
-      } catch (error) {
-        console.error("Failed to get recommendations:", error);
-      } finally {
-        setIsLoadingRecommendations(false);
-      }
-    };
-
-    fetchRecommendations();
-  }, [debouncedSearch]);
+  const filteredProducts = useSearch(searchTerm);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,7 +107,7 @@ const Index = () => {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="container mx-auto py-4 px-4 md:px-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-primary">ShopNow</h1>
+            <h1 className="text-2xl font-bold text-primary">UniShop</h1>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
@@ -172,16 +136,6 @@ const Index = () => {
 
       {/* Main content */}
       <div className="container mx-auto py-8 px-4 md:px-6">
-        {/* Recommendations */}
-        <RecommendationPanel 
-          recommendation={recommendation} 
-          products={suggestedProducts}
-          isLoading={isLoadingRecommendations}
-          searchTerm={searchTerm}
-          onApiKeyChange={() => {}}  // Empty function as we don't need this anymore
-          apiKey=""  // Empty string as we don't need an API key
-        />
-
         {/* Categories */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Categories</h2>
@@ -257,14 +211,14 @@ const Index = () => {
                       {product.discount > 0 ? (
                         <div className="flex items-center gap-2">
                           <span className="text-lg font-bold">
-                            ${(product.price * (1 - product.discount / 100)).toFixed(2)}
+                            ${(product.price * (1 - product.originalPrice / 100)).toFixed(2)}
                           </span>
                           <span className="text-sm text-muted-foreground line-through">
-                            ${product.price.toFixed(2)}
+                            ${parseInt(product.price).toFixed(2)}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-lg font-bold">${product.price.toFixed(2)}</span>
+                        <span className="text-lg font-bold">${parseInt(product.price).toFixed(2)}</span>
                       )}
                     </div>
                     <Button size="sm" className="rounded-full">
@@ -284,7 +238,7 @@ const Index = () => {
         <div className="container mx-auto py-8 px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-3">ShopNow</h3>
+              <h3 className="text-lg font-semibold mb-3">UniShop</h3>
               <p className="text-muted-foreground text-sm">Your one-stop shop for all your needs.</p>
             </div>
             <div>
@@ -315,7 +269,7 @@ const Index = () => {
             </div>
           </div>
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            &copy; 2025 ShopNow. All rights reserved.
+            &copy; 2025 UniShop. All rights reserved.
           </div>
         </div>
       </footer>
