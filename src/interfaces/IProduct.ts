@@ -1,3 +1,4 @@
+
 import { ICategory } from "./ICategory";
 
 export interface IProduct {
