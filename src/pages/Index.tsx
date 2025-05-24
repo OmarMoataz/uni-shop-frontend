@@ -19,7 +19,7 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const [filteredProducts, isError] = useSearch(debouncedSearch);
+  const [filteredProducts, isError, isLoading] = useSearch(debouncedSearch);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +44,7 @@ const Index = () => {
 
         <ProductList 
           isError={isError}
+          isLoading={isLoading}
           filteredProducts={filteredProducts}
         />
       </div>

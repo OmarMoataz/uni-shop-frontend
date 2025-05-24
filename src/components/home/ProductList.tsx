@@ -9,10 +9,11 @@ import { Link } from 'react-router-dom';
 
 interface ProductListProps {
   isError: boolean;
+  isLoading: boolean;
   filteredProducts: IProduct[];
 }
 
-const ProductList = ({ isError, filteredProducts }: ProductListProps) => {
+const ProductList = ({ isError, isLoading, filteredProducts }: ProductListProps) => {
   return (
     <section>
       <h2 className="text-2xl font-bold mb-6">Products</h2>
@@ -22,7 +23,12 @@ const ProductList = ({ isError, filteredProducts }: ProductListProps) => {
           <p className="mt-2 text-muted-foreground">Please try again later</p>
         </div>
       )}
-      {!isError && filteredProducts.length === 0 ? (
+      {isLoading && (
+        <div> 
+          Loading...
+        </div>
+      )}
+      {!isLoading && !isError && filteredProducts.length === 0 ? (
         <div className="text-center py-12">
           <h3 className="text-xl font-medium text-muted-foreground">No products found</h3>
           <p className="mt-2 text-muted-foreground">Try a different search term</p>
