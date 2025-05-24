@@ -90,7 +90,7 @@ const ProductDetail = () => {
             
             <ProductDescription description={product.description} />
             
-            <ProductActions />
+            <ProductActions product={product} />
             
             <ProductInfo />
           </div>

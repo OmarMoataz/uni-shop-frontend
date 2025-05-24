@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearch } from '@/hooks/useSearch';
+import { CartProvider } from '@/contexts/CartContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/home/HeroSection';
@@ -27,30 +28,32 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <HeroSection 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-      />
-
-      <div className="container mx-auto py-8 px-4 md:px-6">
-        <CategoryList 
+    <CartProvider>
+      <div className="min-h-screen bg-background">
+        <Header />
+        
+        <HeroSection 
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
         />
 
-        <ProductList 
-          isError={isError}
-          isLoading={isLoading}
-          filteredProducts={filteredProducts}
-        />
+        <div className="container mx-auto py-8 px-4 md:px-6">
+          <CategoryList 
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+
+          <ProductList 
+            isError={isError}
+            isLoading={isLoading}
+            filteredProducts={filteredProducts}
+          />
+        </div>
+
+        <Footer />
       </div>
-
-      <Footer />
-    </div>
+    </CartProvider>
   );
 };
 
