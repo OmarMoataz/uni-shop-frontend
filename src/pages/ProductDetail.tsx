@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from "lucide-react";
 import { IProduct } from "@/interfaces/IProduct";
 import { apiUrls } from '@/lib/apiURLs';
+import { CartProvider } from '@/contexts/CartContext';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ProductImageCarousel from "@/components/product/ProductImageCarousel";
@@ -15,7 +16,7 @@ import ProductInfo from "@/components/product/ProductInfo";
 import ProductDetailSkeleton from "@/components/product/ProductDetailSkeleton";
 import ProductNotFound from "@/components/product/ProductNotFound";
 
-const ProductDetail = () => {
+const ProductDetailPage = () => {
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<IProduct | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +100,14 @@ const ProductDetail = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const ProductDetail = () => {
+  return (
+    <CartProvider>
+      <ProductDetailPage />
+    </CartProvider>
   );
 };
 
