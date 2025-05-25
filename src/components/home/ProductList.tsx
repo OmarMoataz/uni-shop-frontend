@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/useToast';
 import CartCounter from '@/components/ui/CartCounter';
+import ProductListSkeleton from './ProductListSkeleton';
 
 interface ProductListProps {
   isError: boolean;
@@ -33,6 +35,10 @@ const ProductList = ({ isError, isLoading, filteredProducts }: ProductListProps)
     return cartItem ? cartItem.quantity : 0;
   };
 
+  if (isLoading) {
+    return <ProductListSkeleton />;
+  }
+
   return (
     <section>
       <h2 className="text-2xl font-bold mb-6">Products</h2>
@@ -42,12 +48,7 @@ const ProductList = ({ isError, isLoading, filteredProducts }: ProductListProps)
           <p className="mt-2 text-muted-foreground">Please try again later</p>
         </div>
       )}
-      {isLoading && (
-        <div> 
-          Loading...
-        </div>
-      )}
-      {!isLoading && !isError && filteredProducts.length === 0 ? (
+      {!isError && filteredProducts.length === 0 ? (
         <div className="text-center py-12">
           <h3 className="text-xl font-medium text-muted-foreground">No products found</h3>
           <p className="mt-2 text-muted-foreground">Try a different search term</p>
