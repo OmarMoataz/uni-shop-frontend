@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { IProduct } from '@/interfaces/IProduct';
 import { Link } from 'react-router-dom';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/useToast';
 
 interface ProductListProps {
   isError: boolean;
@@ -14,6 +16,18 @@ interface ProductListProps {
 }
 
 const ProductList = ({ isError, isLoading, filteredProducts }: ProductListProps) => {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = (e: React.MouseEvent, product: IProduct) => {
+    e.preventDefault(); // Prevent navigation when clicking the button
+    addToCart(product);
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
+
   return (
     <section>
       <h2 className="text-2xl font-bold mb-6">Products</h2>
@@ -92,10 +106,7 @@ const ProductList = ({ isError, isLoading, filteredProducts }: ProductListProps)
                       )}
                     </div>
                   </div>
-                  <Button size="sm" className="rounded-full" onClick={(e) => {
-                    e.preventDefault(); // Prevent navigation when clicking the button
-                    // Add to cart logic here
-                  }}>
+                  <Button size="sm" className="rounded-full" onClick={(e) => handleAddToCart(e, product)}>
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     Add
                   </Button>
