@@ -1,8 +1,0 @@
-export const categories = [
-  "All",
-  "Electronics",
-  "Clothing",
-  "Sports",
-  "Home",
-  "Accessories",
-];
