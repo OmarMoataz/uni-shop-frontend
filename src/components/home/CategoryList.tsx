@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { useCategories } from '@/hooks/useCategories';
 
 interface CategoryListProps {
-  searchTerm: string;
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  categoryTerm: string;
+  onSetCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const CategoryList = ({ searchTerm, setSearchTerm }: CategoryListProps) => {
+const CategoryList = ({ categoryTerm, onSetCategory }: CategoryListProps) => {
   const [categories, isError, isLoading] = useCategories();
 
   if (isLoading) {
@@ -40,8 +40,10 @@ const CategoryList = ({ searchTerm, setSearchTerm }: CategoryListProps) => {
         {categories.map((category) => (
           <Button 
             key={category.id} 
-            variant={category.name === searchTerm || (category.name === "All" && searchTerm === '') ? "default" : "outline"}
-            onClick={() => category.name === "All" ? setSearchTerm('') : setSearchTerm(category.name)}
+            variant={category.name === categoryTerm || (category.name === "All" && categoryTerm === '') ? "default" : "outline"}
+            onClick={() => {
+               onSetCategory(category.name);
+            }}
             className="whitespace-nowrap"
           >
             {category.name}

@@ -12,6 +12,12 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
+  const [category, setCategory] = useState('All');
+
+  const handleCategoryChange = (value) => {
+    setCategory(value);
+  }
+
   // Debounce search term to avoid too many API calls
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -20,7 +26,7 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const [filteredProducts, isError, isLoading] = useSearch(debouncedSearch);
+  const [filteredProducts, isError, isLoading] = useSearch(debouncedSearch, category);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +46,8 @@ const Index = () => {
 
         <div className="container mx-auto py-8 px-4 md:px-6">
           <CategoryList 
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            categoryTerm={category}
+            onSetCategory={handleCategoryChange}
           />
 
           <ProductList 

@@ -2,7 +2,7 @@ import { IProduct } from "@/interfaces/IProduct";
 import { apiUrls } from "@/lib/apiURLs";
 import { useCallback, useEffect, useState } from "react";
 
-export const useSearch = (query: string): [IProduct[], boolean, boolean] => {
+export const useSearch = (query: string, category: string): [IProduct[], boolean, boolean] => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isError, setError] = useState(false);
     const [isLoading, setLoading] = useState(false);
@@ -16,9 +16,9 @@ export const useSearch = (query: string): [IProduct[], boolean, boolean] => {
             setLoading(true);
 
             if (query) {
-                response = await fetch(apiUrls.searchProducts(query));
+                response = await fetch(apiUrls.searchProducts(query, category));
             } else {
-                response = await fetch(apiUrls.getAllProducts());
+                response = await fetch(apiUrls.getAllProducts(category));
             }
 
             const data = await response.json();
@@ -28,11 +28,11 @@ export const useSearch = (query: string): [IProduct[], boolean, boolean] => {
             setError(true);
             console.error("Failed to fetch recommendations:", error);
         }
-    }, [query]);
+    }, [query, category]);
 
     useEffect(() => {
         fetchProducts();
-    }, [query, fetchProducts]);
+    }, [query, category, fetchProducts]);
 
 
     return [filteredProducts, isError, isLoading];
