@@ -26,7 +26,7 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const [filteredProducts, isError, isLoading] = useSearch(debouncedSearch, category);
+  const [filteredProducts, isError, isLoading] = useSearch(debouncedSearch, category === "All" ? "" : category);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
